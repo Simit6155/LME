@@ -39,7 +39,7 @@ sudo apt update
 sudo apt install build-essential cmake nasm
 ```
 
-## How to run it (idiot-proof steps)
+## How to run it 
 
 1. Open a terminal in the project folder (the one with `CMakeLists.txt` in it).
 2. Build it:
