@@ -156,32 +156,6 @@ There are no variables, math, functions, loops, or anything like that yet.
 
 I mostly made this to understand the basic process of going from source code to an actual executable.
 
-## Contributors
-
-Everyone who has contributed to the project:
-
-<p align="left">
-<a href="https://github.com/Simit6155" title="Simit6155"><img src="https://avatars.githubusercontent.com/u/198788214?v=4&s=64" width="64" height="64" alt="Simit6155" style="border-radius:50%" /></a>
-</p>
-
-[See the full list of contributors →](https://github.com/Simit6155/LME/graphs/contributors)
-
-## Contributing
-
-If you want to contribute, feel free to fork the repo and open a pull request.
-
-Basic flow:
-
-1. **Fork** the repository
-2. **Clone** your fork: `git clone https://github.com/Simit6155/LME.git`
-3. **Create a branch**: `git checkout -b feature/your-feature`
-4. Make your changes
-5. **Commit** them: `git commit -m 'feat: add some feature'`
-6. **Push** your branch: `git push origin feature/your-feature`
-7. Open a pull request
-
-Try to keep the code style consistent with the rest of the project.
-
 ## License
 
 This project is licensed under the **MIT License**.
