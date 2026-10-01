@@ -11,124 +11,136 @@
 - [About](#about)
 - [How it works](#how-it-works)
 - [Requirements](#requirements)
-- [Getting started](#getting-started)
-- [How to run it](#how-to-run-it)
+- [Quick test (just want to try it right now?)](#quick-test-just-want-to-try-it-right-now)
+- [Building it yourself](#building-it-yourself)
 - [Writing your own program](#writing-your-own-program)
 - [Project structure](#project-structure)
 - [Current limits](#current-limits)
-- [Contributors](#contributors)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## About
 
 LME stands for **Luna Machine Executable**.
 
-Luna is a small compiler project I made to learn more about how compilers actually work.
+I made Luna to actually understand how compilers work instead of just reading about it. It's a real compiler, just a very small one.
 
-It reads a `.lme` file containing one line like this:
+It reads a `.lme` file with one line like this:
 
-``` id="50n68i"
+```
 cik 42;
 ```
 
-and turns it into a real Linux executable. When you run that executable, it exits with code `42`.
+and turns it into an actual Linux executable. Run that executable, and it exits with code `42`.
 
-That's basically the whole language right now: one command and one number.
-
-`cik` means `exit` in Turkish.
+That's the whole language for now. One command, one number. `cik` means "exit" in Turkish.
 
 ## How it works
 
-There are three main parts:
+Three parts, and each one does one job:
 
-1. **Tokenizer** — reads the `.lme` file character by character and splits it into tokens. For `cik 42;`, those are `cik`, `42`, and `;`.
-2. **Parser** — checks that the tokens are in the expected order and figures out what the program is supposed to do.
-3. **Generator** — takes the parsed result and generates x86-64 assembly from it.
+1. **Tokenizer** — reads the `.lme` file character by character and chops it into tokens. `cik 42;` becomes three tokens: `cik`, `42`, `;`.
+2. **Parser** — checks those tokens are in the right order and builds a small tree out of them.
+3. **Generator** — walks that tree and writes out real x86-64 assembly.
 
-`main.cpp` connects everything together. The generated assembly is passed to `nasm`, then `ld` links it into the final executable called `out`.
+`main.cpp` wires all three together. Once the assembly is written, `nasm` assembles it and `ld` links it into a runnable binary called `out`.
 
 ## Requirements
 
-You'll need:
+Grab these before trying anything:
 
-- A C++ compiler (`g++` or similar)
+- A C++ compiler (`g++` works fine)
 - `cmake`
 - `nasm`
-- `ld` (usually included with `binutils`)
+- `ld` (comes with `binutils`, already on most Linux setups)
 
-If you're using Ubuntu or WSL:
+On Ubuntu or WSL, one line gets you everything:
 
-``` id="rbqzmk"
-sudo apt update
-sudo apt install build-essential cmake nasm
+```bash
+sudo apt update && sudo apt install build-essential cmake nasm
 ```
 
-## Getting started
+## Quick test (just want to try it right now?)
 
-Clone the repo:
+If you grabbed the prebuilt `luna` binary and `test.lme` from the [Releases](../../releases) page, you don't need to build anything. Just do this:
 
-```bash id="t9ngv5"
+```bash
+chmod +x luna
+./luna test.lme
+./out
+echo $?
+```
+
+You should see a number get printed — that's the exit code Luna's compiler produced. If `test.lme` contains `cik 42;`, you'll see `42`.
+
+## Building it yourself
+
+Clone it first:
+
+```bash
 git clone https://github.com/Simit6155/LME.git
 cd LME
 ```
 
-Then follow the steps below.
+Then build it with cmake:
 
-## How to run it
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
 
-1. Open a terminal in the project folder (the one with `CMakeLists.txt` in it).
-2. Build it:
-   ```
-   mkdir build
-   cd build
-   cmake ..
-   make
-   ```
-   This creates a program called `luna` (or `Luna`) inside the `build` folder.
-3. Go back one folder so you can see your `.lme` file:
-   ```
-   cd ..
-   ```
-4. Run the compiler on the test file:
-   ```
-   ./build/luna test.lme
-   ```
-5. This creates a file called `out` in your current folder. Run it:
-   ```
-   ./out
-   ```
-6. Check what exit code it gave you:
-   ```
-   echo $?
-   ```
-   It should print whatever number was in `test.lme` (e.g. `42`).
+This drops a binary called `luna` inside the `build` folder. Go back to the project root so you can see the test file:
+
+```bash
+cd ..
+```
+
+Now compile the test program:
+
+```bash
+./build/luna test.lme
+```
+
+That generates a file called `out` in the current folder. Run it:
+
+```bash
+./out
+```
+
+Then check what exit code it gave you:
+
+```bash
+echo $?
+```
+
+That number should match whatever was in `test.lme`.
 
 ## Writing your own program
 
-Make a new text file, e.g. `myprogram.lme`, with one line:
+Make a new file, say `myprogram.lme`, with one line:
 
-``` id="qkn5zp"
+```
 cik 7;
 ```
 
-Then run:
+Compile and run it the same way:
 
-``` id="p8zxuv"
+```bash
 ./build/luna myprogram.lme
 ./out
 echo $?
 ```
 
-You should see `7`.
+You should get `7` back.
 
 ## Project structure
 
-``` id="a3ty8w"
+```
 .
 ├── CMakeLists.txt
 ├── LICENSE
-├── gitignore
+├── .gitignore
 ├── src
 │   ├── generation.h
 │   ├── main.cpp
@@ -137,25 +149,23 @@ You should see `7`.
 └── test.lme
 ```
 
-The project is pretty small, so most of the important stuff is in `src`:
+Everything that matters lives in `src`:
 
-- `tokenization.h` handles tokenizing the source code
-- `parser.h` handles parsing
-- `generation.h` generates the assembly
-- `main.cpp` puts everything together
+- `tokenization.h` — splits source code into tokens
+- `parser.h` — turns tokens into a parse tree
+- `generation.h` — turns the tree into assembly
+- `main.cpp` — glues the three stages together
 
 ## Current limits
 
-LME is still very small. Right now it only understands:
+Luna is intentionally tiny right now. It only understands:
 
-``` id="dh5p6z"
+```
 cik <number>;
 ```
 
-There are no variables, math, functions, loops, or anything like that yet.
-
-I mostly made this to understand the basic process of going from source code to an actual executable.
+No variables, no math, no functions, no loops — none of that yet. The point of this project was learning how source code actually turns into a running program, not building a full language.
 
 ## License
 
-This project is licensed under the **MIT License**.
+MIT. Do whatever you want with it.
